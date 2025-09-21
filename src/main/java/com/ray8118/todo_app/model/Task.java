@@ -1,33 +1,46 @@
 package com.ray8118.todo_app.model;
 
+import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.FutureOrPresent;
 
 @Entity
 @Table
-public class Task { 
+public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int todo_id;
-    
+
     @Column(nullable = false, length = 255)
     private String title;
 
     @Column(nullable = false, length = 1000)
     private String description;
+
     @Column(nullable = false, columnDefinition = "boolean default false")
-    private boolean isCompleted;  
+    private boolean isCompleted;
 
-    public Task(){}
+    @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @FutureOrPresent(message = "Due date must be in the future")
+    private LocalDate dueDate;
 
-    public Task(String title, String description){
+    public Task() {
+    }
+
+    public Task(String title, String description, LocalDate dueDate) {
         this.title = title;
         this.description = description;
         this.isCompleted = false;
+        this.dueDate = dueDate;
     }
 
     public int getTodo_id() {
@@ -62,11 +75,18 @@ public class Task {
         this.isCompleted = isCompleted;
     }
 
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
     @Override
     public String toString() {
         return "Task [todo_id=" + todo_id + ", title=" + title + ", description=" + description + ", isCompleted="
-                + isCompleted + "]";
+                + isCompleted + ", dueDate=" + dueDate + "]";
     }
-
 
 }

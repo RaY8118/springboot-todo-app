@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -49,6 +50,17 @@ public class TaskController {
     @PutMapping("/tasks/{id}")
     public ResponseEntity<Task> updateTask(@PathVariable Integer id, @Valid @RequestBody Task taskDetails) {
         Task updatedTask = taskService.updateTask(id, taskDetails);
+
+        if (updatedTask != null) {
+            return new ResponseEntity<>(updatedTask, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PatchMapping("/tasks/{id}/complete")
+    public ResponseEntity<Task> updateStatus(@PathVariable Integer id) {
+        Task updatedTask = taskService.updateStatus(id);
 
         if (updatedTask != null) {
             return new ResponseEntity<>(updatedTask, HttpStatus.OK);

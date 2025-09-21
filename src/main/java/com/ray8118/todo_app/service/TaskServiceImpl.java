@@ -48,6 +48,16 @@ public class TaskServiceImpl implements TaskService {
         existingTask.setTitle(taskDetails.getTitle());
         existingTask.setDescription(taskDetails.getDescription());
         existingTask.setCompleted(taskDetails.isCompleted());
+        existingTask.setDueDate(taskDetails.getDueDate());
+
+        return taskRepository.save(existingTask);
+    }
+
+    @Override
+    @Transactional
+    public Task updateStatus(Integer id) {
+        Task existingTask = getTaskOrThrow(id);
+        existingTask.setCompleted(!existingTask.isCompleted());
 
         return taskRepository.save(existingTask);
     }

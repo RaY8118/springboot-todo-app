@@ -16,5 +16,7 @@ public interface TaskService {
 
     Task updateTask(Integer id, Task task);
 
+    Task updateStatus(Integer id);
+
     void deleteTask(Integer id);
 }
