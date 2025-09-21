@@ -18,5 +18,9 @@ public interface TaskService {
 
     Task updateStatus(Integer id);
 
+    List<Task> filterTasksByStatus(Boolean completed);
+
+    List<Task> searchTasksByTitle(String title);
+
     void deleteTask(Integer id);
 }

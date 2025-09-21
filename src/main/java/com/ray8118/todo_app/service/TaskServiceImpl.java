@@ -64,6 +64,22 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
+    public List<Task> filterTasksByStatus(Boolean completed) {
+        if (completed == null) {
+            return taskRepository.findAll();
+        } else {
+            return taskRepository.findByIsCompleted(completed);
+        }
+    }
+
+    @Override
+    @Transactional
+    public List<Task> searchTasksByTitle(String title) {
+        return taskRepository.findByTitleContainingIgnoreCase(title);
+    }
+
+    @Override
+    @Transactional
     public void deleteTask(Integer id) {
         taskRepository.deleteById(id);
     }

@@ -19,6 +19,7 @@ import com.ray8118.todo_app.model.Task;
 import com.ray8118.todo_app.service.TaskService;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 public class TaskController {
@@ -45,6 +46,16 @@ public class TaskController {
     public ResponseEntity<Task> getTaskById(@PathVariable Integer id) {
         Task task = taskService.getTaskOrThrow(id);
         return new ResponseEntity<>(task, HttpStatus.OK);
+    }
+
+    @GetMapping("/tasks/filter")
+    public List<Task> searchTasks(@RequestParam(required = false) Boolean completed) {
+        return taskService.filterTasksByStatus(completed);
+    }
+
+    @GetMapping("/tasks/search")
+    public List<Task> searchTasksByTitle(@RequestParam(required = false) String title) {
+        return taskService.searchTasksByTitle(title);
     }
 
     @PutMapping("/tasks/{id}")
