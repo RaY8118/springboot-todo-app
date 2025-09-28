@@ -5,7 +5,10 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.ray8118.todo_app.dto.TaskRequest;
+import com.ray8118.todo_app.dto.TaskResponse;
 import com.ray8118.todo_app.exception.TaskNotFoundException;
+import com.ray8118.todo_app.mapper.TaskMapper;
 import com.ray8118.todo_app.model.Task;
 import com.ray8118.todo_app.repository.TaskRepository;
 
@@ -20,67 +23,84 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public List<TaskResponse> getAllTasks() {
+        return taskRepository.findAll()
+                .stream()
+                .map(TaskMapper::toResponse)
+                .toList();
     }
 
     @Override
-    public Optional<Task> getTaskById(Integer id) {
-        return taskRepository.findById(id);
-    }
-
-    @Override
-    public Task getTaskOrThrow(Integer id) {
+    public Optional<TaskResponse> getTaskById(Integer id) {
         return taskRepository.findById(id)
+                .map(TaskMapper::toResponse);
+
+    }
+
+    @Override
+    public TaskResponse getTaskOrThrow(Integer id) {
+        Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
+
+        return TaskMapper.toResponse(task);
     }
 
     @Override
     @Transactional
-    public Task createTask(Task task) {
-        return taskRepository.save(task);
+    public TaskResponse createTask(TaskRequest request) {
+        Task task = TaskMapper.toEntity(request);
+        Task savedTask = taskRepository.save(task);
+        return TaskMapper.toResponse(savedTask);
     }
 
     @Override
     @Transactional
-    public Task updateTask(Integer id, Task taskDetails) {
-        Task existingTask = getTaskOrThrow(id);
-        existingTask.setTitle(taskDetails.getTitle());
-        existingTask.setDescription(taskDetails.getDescription());
-        existingTask.setCompleted(taskDetails.isCompleted());
-        existingTask.setDueDate(taskDetails.getDueDate());
-
-        return taskRepository.save(existingTask);
+    public TaskResponse updateTask(Integer id, TaskRequest request) {
+        Task existingTask = getTaskOrThrowEntity(id);
+        existingTask.setTitle(request.getTitle());
+        existingTask.setDescription(request.getDescription());
+        existingTask.setDueDate(request.getDueDate());
+        Task updatedTask = taskRepository.save(existingTask);
+        return TaskMapper.toResponse(updatedTask);
     }
 
     @Override
     @Transactional
-    public Task updateStatus(Integer id) {
-        Task existingTask = getTaskOrThrow(id);
+    public TaskResponse updateStatus(Integer id) {
+        Task existingTask = getTaskOrThrowEntity(id);
         existingTask.setCompleted(!existingTask.isCompleted());
 
-        return taskRepository.save(existingTask);
+        Task updatedTask = taskRepository.save(existingTask);
+        return TaskMapper.toResponse(updatedTask);
     }
 
     @Override
-    @Transactional
-    public List<Task> filterTasksByStatus(Boolean completed) {
-        if (completed == null) {
-            return taskRepository.findAll();
-        } else {
-            return taskRepository.findByIsCompleted(completed);
-        }
+    public List<TaskResponse> filterTasksByStatus(Boolean completed) {
+        List<Task> tasks = (completed == null)
+                ? taskRepository.findAll()
+                : taskRepository.findByIsCompleted(completed);
+
+        return tasks.stream().map(TaskMapper::toResponse).toList();
     }
 
     @Override
-    @Transactional
-    public List<Task> searchTasksByTitle(String title) {
-        return taskRepository.findByTitleContainingIgnoreCase(title);
+    public List<TaskResponse> searchTasksByTitle(String title) {
+        return taskRepository.findByTitleContainingIgnoreCase(title)
+                .stream()
+                .map(TaskMapper::toResponse)
+                .toList();
     }
 
     @Override
     @Transactional
     public void deleteTask(Integer id) {
-        taskRepository.deleteById(id);
+        Task existingTask = getTaskOrThrowEntity(id);
+        taskRepository.delete(existingTask);
     }
+
+    private Task getTaskOrThrowEntity(Integer id) {
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
+    }
+
 }

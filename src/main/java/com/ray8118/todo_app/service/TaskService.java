@@ -3,24 +3,25 @@ package com.ray8118.todo_app.service;
 import java.util.List;
 import java.util.Optional;
 
-import com.ray8118.todo_app.model.Task;
+import com.ray8118.todo_app.dto.TaskRequest;
+import com.ray8118.todo_app.dto.TaskResponse;
 
 public interface TaskService {
-    List<Task> getAllTasks();
+    List<TaskResponse> getAllTasks();
 
-    Optional<Task> getTaskById(Integer id);
+    Optional<TaskResponse> getTaskById(Integer id);
 
-    Task getTaskOrThrow(Integer id);
+    TaskResponse getTaskOrThrow(Integer id);
 
-    Task createTask(Task task);
+    TaskResponse createTask(TaskRequest request);
 
-    Task updateTask(Integer id, Task task);
+    TaskResponse updateTask(Integer id, TaskRequest request);
 
-    Task updateStatus(Integer id);
+    TaskResponse updateStatus(Integer id);
 
-    List<Task> filterTasksByStatus(Boolean completed);
+    List<TaskResponse> filterTasksByStatus(Boolean completed);
 
-    List<Task> searchTasksByTitle(String title);
+    List<TaskResponse> searchTasksByTitle(String title);
 
     void deleteTask(Integer id);
 }

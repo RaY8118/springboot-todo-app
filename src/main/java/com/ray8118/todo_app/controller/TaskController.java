@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ray8118.todo_app.model.Task;
+import com.ray8118.todo_app.dto.TaskRequest;
+import com.ray8118.todo_app.dto.TaskResponse;
 import com.ray8118.todo_app.service.TaskService;
 
 import jakarta.validation.Valid;
@@ -29,36 +30,37 @@ public class TaskController {
     }
 
     @GetMapping("/tasks")
-    public List<Task> getTasks() {
+    public List<TaskResponse> getTasks() {
         return taskService.getAllTasks();
     }
 
     @PostMapping("/tasks")
-    public ResponseEntity<Task> addTask(@Valid @RequestBody Task task) {
-        Task createdTask = taskService.createTask(task);
+    public ResponseEntity<TaskResponse> addTask(@Valid @RequestBody TaskRequest taskRequest) {
+        TaskResponse createdTask = taskService.createTask(taskRequest);
 
         return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
     }
 
     @GetMapping("/tasks/{id}")
-    public ResponseEntity<Task> getTaskById(@PathVariable Integer id) {
-        Task task = taskService.getTaskOrThrow(id);
+    public ResponseEntity<TaskResponse> getTaskById(@PathVariable Integer id) {
+        TaskResponse task = taskService.getTaskOrThrow(id);
         return new ResponseEntity<>(task, HttpStatus.OK);
     }
 
     @GetMapping("/tasks/filter")
-    public List<Task> searchTasks(@RequestParam(required = false) Boolean completed) {
+    public List<TaskResponse> searchTasks(@RequestParam(required = false) Boolean completed) {
         return taskService.filterTasksByStatus(completed);
     }
 
     @GetMapping("/tasks/search")
-    public List<Task> searchTasksByTitle(@RequestParam(required = false) String title) {
+    public List<TaskResponse> searchTasksByTitle(@RequestParam(required = false) String title) {
         return taskService.searchTasksByTitle(title);
     }
 
     @PutMapping("/tasks/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Integer id, @Valid @RequestBody Task taskDetails) {
-        Task updatedTask = taskService.updateTask(id, taskDetails);
+    public ResponseEntity<TaskResponse> updateTask(@PathVariable Integer id,
+            @Valid @RequestBody TaskRequest taskDetails) {
+        TaskResponse updatedTask = taskService.updateTask(id, taskDetails);
 
         if (updatedTask != null) {
             return new ResponseEntity<>(updatedTask, HttpStatus.OK);
@@ -68,8 +70,8 @@ public class TaskController {
     }
 
     @PatchMapping("/tasks/{id}/complete")
-    public ResponseEntity<Task> updateStatus(@PathVariable Integer id) {
-        Task updatedTask = taskService.updateStatus(id);
+    public ResponseEntity<TaskResponse> updateStatus(@PathVariable Integer id) {
+        TaskResponse updatedTask = taskService.updateStatus(id);
 
         if (updatedTask != null) {
             return new ResponseEntity<>(updatedTask, HttpStatus.OK);
