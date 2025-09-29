@@ -34,11 +34,11 @@ public class TaskController {
     }
 
     @GetMapping("/tasks")
-    public List<TaskResponse> getTasks() {
+    public ResponseEntity<List<TaskResponse>> getTasks() {
         logger.info("Received request to get all tasks.");
         List<TaskResponse> tasks = taskService.getAllTasks();
         logger.info("Returning {} tasks.", tasks.size());
-        return tasks;
+        return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
     @PostMapping("/tasks")
@@ -58,19 +58,19 @@ public class TaskController {
     }
 
     @GetMapping("/tasks/filter")
-    public List<TaskResponse> searchTasks(@RequestParam(required = false) Boolean completed) {
+    public ResponseEntity<List<TaskResponse>> searchTasks(@RequestParam(required = false) Boolean completed) {
         logger.info("Received request to filter tasks by completed status: {}", completed);
         List<TaskResponse> tasks = taskService.filterTasksByStatus(completed);
         logger.info("Returning {} filtered tasks.", tasks.size());
-        return tasks;
+        return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
     @GetMapping("/tasks/search")
-    public List<TaskResponse> searchTasksByTitle(@RequestParam(required = false) String title) {
+    public ResponseEntity<List<TaskResponse>> searchTasksByTitle(@RequestParam(required = false) String title) {
         logger.info("Received request to search tasks by title: {}", title);
         List<TaskResponse> tasks = taskService.searchTasksByTitle(title);
         logger.info("Returning {} tasks matching title search", tasks);
-        return tasks;
+        return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
     @PutMapping("/tasks/{id}")
