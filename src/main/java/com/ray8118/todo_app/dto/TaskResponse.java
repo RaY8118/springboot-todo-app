@@ -13,6 +13,9 @@ public class TaskResponse {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueDate;
 
+    public TaskResponse() {
+    }
+
     public TaskResponse(int todo_id, String title, String description, boolean isCompleted, LocalDate dueDate) {
         this.todo_id = todo_id;
         this.title = title;
